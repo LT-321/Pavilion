@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 //如何oAuth授权登录
 //1. Request a user's GitHub identity
@@ -25,29 +26,32 @@ public class AuthorizeController {
 
     @Autowired//自动把容器内写好的实例加载到当前上下文
     private GithubProvider githubProvider;
-//通过application.properties配置
-    @Value("${github.client.id}")
-    private String clientId;
-    @Value("${github.client.secret}")
-    private String clientSecret;
-    @Value("${github.redirect.uri}")
-    private String redirectUri;
+
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
-                           @RequestParam(name = "state") String state){
-        AccessTokenDTO accessTokenDTO = new AccessTokenDTO();//shift+回车 直接换行
-        githubProvider.getAccessToken(accessTokenDTO);//ctrl+alt+v 快速创建变量
-        accessTokenDTO.setClient_id("clientId");
-        accessTokenDTO.setClient_secret("clientSecret");
-        accessTokenDTO.setCode(code);
-        accessTokenDTO.setRedirect_uri("redirectUri");
+                           @RequestParam(name = "state") String state,
+                            HttpServletRequest request)
+            //session是在request中拿到的
+
+    {
+        AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
+
         accessTokenDTO.setState(state);
+        accessTokenDTO.setCode(code);
+        accessTokenDTO.setClient_id("5ca82caf96ec46a5d3b1");
+        accessTokenDTO.setClient_secret("2c67518d79312de365ccefa69d9c7b4f7e6f4b9d");
+        accessTokenDTO.setRedirect_uri("http://localhost:8080/callback");
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser user = githubProvider.getUser(accessToken);
-        System.out.println(user.getName());
-        //由此往上是第二步：通过access_token 携带code去获取access_token
-        return "index";
+        if (user != null){
+            request.getSession().setAttribute("user",user);//银行账户创建成功
+            return "redirect:/";//把地址重定向到8080
+            //登陆成功 写cookie和session
+        }else {
+            //登陆失败 重新登陆
+            return "redirect:/";
+        }
     }
 
 }

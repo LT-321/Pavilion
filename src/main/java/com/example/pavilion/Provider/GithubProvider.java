@@ -26,11 +26,7 @@ public class GithubProvider {
         try (Response response = client.newCall(request).execute()) {
             //return response.body().string();
             String string = response.body().string();
-//            String[] split = string.split("&");//通过对split和tokenstr做ctal+alt+N变成如下形式：快速把当前变量放到原文中去
-//            String tokenstr = split[0];
-//            String token = tokenstr.split("=")[1];
-            String token = string.split("&")[0].split("=")[1];//分割获取到的string，只保留token
-//            String token = string.split("&")[0].split("=")[1];
+            String token = string.split("&")[0].split("=")[1];
             return token;
         } catch (Exception e) {
            e.printStackTrace();
@@ -38,10 +34,10 @@ public class GithubProvider {
         return null;
     }
     //通过access_token去获取user信息
-    public GithubUser getUser(String access_token){
+    public GithubUser getUser(String accessToken){
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("https://api.github.com/user?access_token="+access_token)
+                .url("https://api.github.com/user?access_token="+ accessToken)
                 .build();
         try {
             Response response = client.newCall(request).execute();
@@ -49,7 +45,7 @@ public class GithubProvider {
             GithubUser githubUser = JSON.parseObject(string, GithubUser.class);//parseObject把string自动转化成JAVA的类对象
             return githubUser;
         } catch (IOException e) {
-            return null;
         }
+        return null;
     }
 }
