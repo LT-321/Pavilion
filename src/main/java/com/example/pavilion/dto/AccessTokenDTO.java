@@ -1,6 +1,6 @@
 package com.example.pavilion.dto;
 //当参数对象超过3个的时候可以考虑把它封装成一个对象
-// DTO Data Transfer Object 数据传输对象
+// DTO Data Transfer Object 数据传输对象(网络传输用)
 
 public class AccessTokenDTO {
     private String client_id;

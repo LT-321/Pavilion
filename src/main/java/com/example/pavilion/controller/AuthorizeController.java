@@ -3,17 +3,15 @@ package com.example.pavilion.controller;
 import com.example.pavilion.Provider.GithubProvider;
 import com.example.pavilion.dto.AccessTokenDTO;
 import com.example.pavilion.dto.GithubUser;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.example.pavilion.mapper.UserMapper;
+import com.example.pavilion.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import java.util.UUID;
 //如何oAuth授权登录
 //1. Request a user's GitHub identity
 //2. Users are redirected back to your site by GitHub
@@ -27,6 +25,8 @@ public class AuthorizeController {
     @Autowired//自动把容器内写好的实例加载到当前上下文
     private GithubProvider githubProvider;
 
+    @Autowired
+    private UserMapper userMapper;
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
@@ -43,9 +43,16 @@ public class AuthorizeController {
         accessTokenDTO.setClient_secret("2c67518d79312de365ccefa69d9c7b4f7e6f4b9d");
         accessTokenDTO.setRedirect_uri("http://localhost:8080/callback");
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        GithubUser user = githubProvider.getUser(accessToken);
-        if (user != null){
-            request.getSession().setAttribute("user",user);//银行账户创建成功
+        GithubUser githubUser = githubProvider.getUser(accessToken);
+        if (githubUser != null){
+            User user = new User();//ctrl + alt +v 自动生成变量
+            user.setToken(UUID.randomUUID().toString());
+            user.setName(githubUser.getName());
+            user.setAccountId(String.valueOf(githubUser.getId()));
+            user.setGmtCreate(System.currentTimeMillis());//当前时间，毫秒数
+            user.setGmtModified(user.getGmtCreate());
+            userMapper.insert(user);
+            request.getSession().setAttribute("user",githubUser);//银行账户创建成功
             return "redirect:/";//把地址重定向到8080
             //登陆成功 写cookie和session
         }else {
