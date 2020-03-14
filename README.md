@@ -16,7 +16,7 @@
 [Git](https://git-scm.com/)
 
 [Visual-Paradigm](https://www.visual-paradigm.com/cn/)
-##脚本
+## 脚本
 ```sql
 create table USER
 (
