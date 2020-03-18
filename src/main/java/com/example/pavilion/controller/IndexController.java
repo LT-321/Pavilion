@@ -27,7 +27,11 @@ public class IndexController {
         //p18 实现持久化登陆状态获取 （现在已经把token写到了token变量里面了，所以在访问首页的时候，我们需要把Cookie里面key为token的
         // 信息获取到，然后到数据库中查询，看数据库中是否存在，以此来验证它是否登陆成功）
         Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return "index";
+        }
         for (Cookie cookie : cookies) {
+
             if (cookie.getName().equals("token")) {
                 String token = cookie.getValue();
                 User user = userMapper.findByToken(token);//传一个token，就能获取一个user对象 user对象不为空说明登录成功

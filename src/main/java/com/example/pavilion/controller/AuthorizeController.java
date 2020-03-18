@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 //如何oAuth授权登录
@@ -32,6 +34,7 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
+                          // HttpServletRequest request,//因为P20空指针异常，所以再将request添进来试试
                            HttpServletResponse response)
     //session是在request中拿到的
     {
@@ -57,7 +60,7 @@ public class AuthorizeController {
             response.addCookie(new Cookie("token", token));
 
             //登陆成功，写入cookie和session
-            //request.getSession().setAttribute("user", githubUser);//银行账户创建成功
+           // request.getSession().setAttribute("user", githubUser);//银行账户创建成功 ；p20异常 故加进来
 
             return "redirect:/";//把地址重定向到8080
             //登陆成功 写cookie和session
