@@ -43,11 +43,11 @@ public class AuthorizeController {
         accessTokenDTO.setState(state);
         accessTokenDTO.setCode(code);
         accessTokenDTO.setClient_id("5ca82caf96ec46a5d3b1");
-        accessTokenDTO.setClient_secret("2c67518d79312de365ccefa69d9c7b4f7e6f4b9d");
+        accessTokenDTO.setClient_secret("ce11aec79cc56a0d2a649025c9dfda3bdfc83a88");
         accessTokenDTO.setRedirect_uri("http://localhost:8080/callback");
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if (githubUser != null) {
+        if (githubUser != null && githubUser.getId() != null) {
             User user = new User();//ctrl + alt +v 自动生成变量
             String token = UUID.randomUUID().toString();//全局唯一标识符,是指在一台机器上生成的数字，它保证对在同一时空中的所有机器都是唯一的
             user.setToken(token);
